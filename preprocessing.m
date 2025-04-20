@@ -1,7 +1,7 @@
 pkg load image
 
-originalImageName = 'angeled2.jpg';
-filteredImageName = 'angeled2_filtered.jpg';
+originalImageName = 'LP2.jpg';
+filteredImageName = 'LP2_filtered.jpg';
 
 
 scriptFolder = fileparts(mfilename('fullpath'));
