@@ -1,7 +1,7 @@
 pkg load image
 
 originalImageName = 'LP2.jpg';
-filteredImageName = 'LP2_filtered.jpg';
+adjustedImageName = 'LP2_adjusted.jpg';
 
 
 scriptFolder = fileparts(mfilename('fullpath'));
@@ -22,12 +22,9 @@ enhancedImage = histeq(grayImage);
 % OR, use contrast stretching
 adjustedImage = imadjust(grayImage);
 
-% Gaussian filter
-filteredImage = imgaussfilt(enhancedImage, 1);  % sigma = 1
 
-
-filteredBaseFolder = fullfile(scriptFolder, 'LP_Samples', 'filteredImages');
-filteredImagePath = fullfile(filteredBaseFolder, filteredImageName);
-imwrite(filteredImage, filteredImagePath);
+adjustedBaseFolder = fullfile(scriptFolder, 'LP_Samples', 'filteredImages');
+adjustedImagePath = fullfile(adjustedBaseFolder, adjustedImageName);
+imwrite(adjustedImage, adjustedImagePath);
 
 
