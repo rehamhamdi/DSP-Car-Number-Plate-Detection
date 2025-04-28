@@ -210,6 +210,7 @@ if ~isempty(detectedPlateText)
     disp(['Detected Plate Text: ', detectedPlateText]);
 else
     disp('No valid plate text detected.');
+    return; % Stop execution if no plate text detected
 end
 
 %% Step 6: Check if Plate is Allowed to Enter after OCR 
