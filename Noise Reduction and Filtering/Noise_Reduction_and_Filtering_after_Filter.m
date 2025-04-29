@@ -31,7 +31,7 @@ for k = 1:length(imageFiles)
     [~, baseName, ext] = fileparts(imageFiles(k).name);
     imwrite(filtered_median, fullfile(outputFolder, [baseName '_median' ext]));
 
-    % Display the result (optional)
+    % Display the result 
     figure('Name', ['Gaussian -> Median: ', imageFiles(k).name], 'NumberTitle', 'off');
     subplot(1, 2, 1), imshow(img), title('Gaussian Filtered Image');
     subplot(1, 2, 2), imshow(filtered_median), title('After Median Filter');
