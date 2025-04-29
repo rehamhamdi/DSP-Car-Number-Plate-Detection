@@ -95,10 +95,6 @@ else
     return; % Stop execution if no plate detected
 end
 
-%filtered_median = medfilt2(plateImage, [3 3]);
-%figure,imshow(filtered_median);
-%title('After Median Filter');
-
 %% step 4: character segmentation
 
 % 1. Adaptive Thresholding
