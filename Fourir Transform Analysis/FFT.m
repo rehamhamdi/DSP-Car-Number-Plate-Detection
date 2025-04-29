@@ -1,7 +1,7 @@
 clear all; close all; clc
 
 % Input image folder
-folderPath = 'original';
+folderPath = 'Original_Cars';
 
 % Output folders
 reconstructedFolder = 'reconstructed_output';
