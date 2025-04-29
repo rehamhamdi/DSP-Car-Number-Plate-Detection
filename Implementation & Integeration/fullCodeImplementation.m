@@ -194,9 +194,6 @@ for i = 1:numel(regions)
        
         detectedText = strtrim(ocrResult.Text);
         detectedText = regexprep(detectedText, '[^A-Za-z0-9 ]', '');
-        if length(detectedText) > 8
-            detectedText = detectedText(end-7:end);
-        end
 
         if ~isempty(detectedText) && length(detectedText) > maxTextLength
             maxTextLength = length(detectedText);
