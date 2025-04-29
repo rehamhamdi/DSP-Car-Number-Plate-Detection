@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html xmlns="http://www.w3.org/1999/xhtml"><head><base href="https://mosh-proda-us-east-1.mathworks.com/static/Loeyff8f/HTMLPagetp5d8b910c46704d2fa319a344fc92cec4/fullCodeImplementation.html?mre=https%3A%2F%2Fmosh-proda-us-east-1.mathworks.com%2F" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>fullCodeImplementation</title><meta name="generator" content="MATLAB 24.2" /><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" /><meta name="DC.date" content="2025-04-29" /><meta name="DC.source" content="fullCodeImplementation.m" /><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head>
+
+
+
+
+
+
+
+
+
+
+<body class="mw-theme-dark" style="zoom: 100%;">
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">step 1: Image Processing</a>
+</li>
+<li>
+<a href="#3">step 2: remove noise</a>
+</li>
+<li>
+<a href="#4">step 3: licence plate detetion</a>
+</li>
+<li>
+<a href="#5">step 4: character segmentation</a>
+</li>
+<li>
+<a href="#6">step 5: OCR</a>
+</li>
+<li>
+<a href="#7">Step 6: Check if Plate is Allowed to Enter after OCR</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">clc; clear; close <span class="string">all</span>;
+</pre>
+<h2 id="2">step 1: Image Processing</h2>
+<pre class="codeinput">originalImage = imread(<span class="string">'mainImage.jpg'</span>);
+figure, imshow(originalImage);
+title(<span class="string">'Original Image'</span>);
+<span class="keyword">if</span> size(originalImage, 3) == 3
+    grayImage = rgb2gray(originalImage);
+<span class="keyword">else</span>
+    grayImage = originalImage;  <span class="comment">% already grayscale</span>
+<span class="keyword">end</span>
+
+<span class="comment">% use contrast stretching</span>
+adjustedImage = imadjust(grayImage);
+figure, imshow(adjustedImage);
+title(<span class="string">'Grayscale Adjusted Image'</span>);
+</pre>
+<img vspace="5" hspace="5" src="fullCodeImplementation_01.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_02.png" alt="" /> <h2 id="3">step 2: remove noise</h2>
+<pre class="codeinput"><span class="comment">%-------------------------</span>
+<span class="comment">% Method 1: Apply Gaussian Filter for smoothing</span>
+<span class="comment">%-------------------------</span>
+gaussian_filter = fspecial(<span class="string">'gaussian'</span>, [5 5], 1);  <span class="comment">% [size] and sigma</span>
+filtered_gaussian = imfilter(adjustedImage, gaussian_filter, <span class="string">'replicate'</span>);
+
+<span class="comment">%-------------------------</span>
+<span class="comment">% Method 2: Apply Median Filter to remove salt &amp; pepper noise</span>
+<span class="comment">%-------------------------</span>
+filtered_median = medfilt2(filtered_gaussian, [3 3]);
+
+<span class="comment">%-------------------------</span>
+<span class="comment">% Display Results</span>
+<span class="comment">%-------------------------</span>
+
+figure;
+imshow(filtered_gaussian);
+title(<span class="string">'After Gaussian Filter'</span>);
+
+figure;
+imshow(filtered_median);
+title(<span class="string">'After Median Filter'</span>);
+
+fprintf(<span class="string">'Noise reduction and filtering completed ✅\n'</span>);
+</pre>
+<pre class="codeoutput">Noise reduction and filtering completed ✅
+</pre>
+<img vspace="5" hspace="5" src="fullCodeImplementation_03.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_04.png" alt="" /> <h2 id="4">step 3: licence plate detetion</h2>
+<pre class="codeinput"><span class="comment">% Load the license plate detector using the XML file</span>
+plateDetector = vision.CascadeObjectDetector(<span class="string">'licensePlate.xml'</span>);
+
+<span class="comment">% Detect license plates in the image</span>
+bboxes = step(plateDetector, filtered_median);
+
+<span class="comment">% Check if any plate is detected</span>
+<span class="keyword">if</span> ~isempty(bboxes)
+    <span class="comment">% Show the original image with detected plates</span>
+    figure, imshow(filtered_median);
+    hold <span class="string">on</span>;
+    <span class="keyword">for</span> i = 1:size(bboxes, 1)
+        <span class="comment">% Draw a green rectangle around each detected plate</span>
+        rectangle(<span class="string">'Position'</span>, bboxes(i,:), <span class="string">'EdgeColor'</span>, <span class="string">'g'</span>, <span class="string">'LineWidth'</span>, 2);
+    <span class="keyword">end</span>
+    title(<span class="string">'Detected License Plate'</span>);
+
+    <span class="comment">% Crop the first detected license plate from the image</span>
+    bbox = bboxes(1,:); <span class="comment">% Get the first detected bounding box</span>
+
+    <span class="comment">% Calculate the new bounding box by reducing 5% from each side</span>
+    x = bbox(1);
+    y = bbox(2);
+    w = bbox(3);
+    h = bbox(4);
+
+    <span class="comment">% Reduce 5% from each side</span>
+    x = x + 0.05 * w; <span class="comment">% Shift left by 5% of width</span>
+    y = y + 0.05 * h; <span class="comment">% Shift up by 5% of height</span>
+    w = w - 0.1 * w;  <span class="comment">% Reduce the width by 10% (5% from each side)</span>
+    h = h - 0.1 * h;  <span class="comment">% Reduce the height by 10% (5% from each side)</span>
+
+    <span class="comment">% Make sure the new coordinates are within the image boundaries</span>
+    x = max(x, 1);
+    y = max(y, 1);
+    w = min(w, size(filtered_median, 2) - x);
+    h = min(h, size(filtered_median, 1) - y);
+
+    <span class="comment">% Crop the image using the new bounding box</span>
+    plateImage = imcrop(filtered_median, [x, y, w, h]);
+
+    <span class="comment">% Show the cropped license plate in a new figure</span>
+    figure, imshow(plateImage);
+    title(<span class="string">'Cropped and Resized License Plate'</span>);
+<span class="keyword">else</span>
+    <span class="comment">% If no plates are detected, display a message</span>
+    disp(<span class="string">'No plate detected.'</span>);
+    <span class="keyword">return</span>; <span class="comment">% Stop execution if no plate detected</span>
+<span class="keyword">end</span>
+</pre>
+<img vspace="5" hspace="5" src="fullCodeImplementation_05.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_06.png" alt="" /> <h2 id="5">step 4: character segmentation</h2>
+<pre class="codeinput"><span class="comment">% 1. Adaptive Thresholding</span>
+T = adaptthresh(plateImage, 0.79);
+binary_plate = imbinarize(plateImage, T);
+binary_plate = ~binary_plate;
+
+<span class="comment">% 2. Remove small noise</span>
+binary_plate = bwareaopen(binary_plate, 50);
+
+<span class="comment">% 3. Extract object properties</span>
+props = regionprops(binary_plate, <span class="string">'BoundingBox'</span>, <span class="string">'Centroid'</span>, <span class="string">'Area'</span>);
+
+<span class="comment">% 4. Filter by size: exclude very small or very large objects</span>
+areas = [props.Area];
+min_area = 80;
+max_area = 2000; <span class="comment">% To exclude large frames, e.g., the plate frame</span>
+valid_idx = find(areas &gt;= min_area &amp; areas &lt;= max_area);
+filtered_props = props(valid_idx);
+
+<span class="comment">% 5. Extract Y-centroid to find the baseline</span>
+centroids = cat(1, filtered_props.Centroid);
+mean_y = mean(centroids(:,2));
+tolerance = 25; <span class="comment">% Allowable deviation for characters in the same line</span>
+
+<span class="comment">% 6. Filter characters in the same line</span>
+line_idx = abs(centroids(:,2) - mean_y) &lt; tolerance;
+filtered_props = filtered_props(line_idx);
+centroids = centroids(line_idx,:);
+
+<span class="comment">% 7. Sort from left to right</span>
+[~, sort_idx] = sort(centroids(:,1));
+filtered_props = filtered_props(sort_idx);
+
+<span class="comment">% 8. Display bounding boxes with numbering</span>
+figure, imshow(plateImage);
+title(<span class="string">'Final Filtered Bounding Boxes'</span>);
+hold <span class="string">on</span>;
+<span class="keyword">for</span> i = 1:length(filtered_props)
+    bbox = filtered_props(i).BoundingBox;
+    rectangle(<span class="string">'Position'</span>, bbox, <span class="string">'EdgeColor'</span>, <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2);
+    text(bbox(1), bbox(2)-10, sprintf(<span class="string">'#%d'</span>, i), <span class="string">'Color'</span>, <span class="string">'yellow'</span>, <span class="string">'FontSize'</span>, 10);
+<span class="keyword">end</span>
+hold <span class="string">off</span>;
+
+
+<span class="comment">% 10. Crop and save each character with expanded bounding box</span>
+<span class="keyword">for</span> i = 1:length(filtered_props)
+    bbox = filtered_props(i).BoundingBox;
+    expand = 5;
+    x1 = max(bbox(1) - expand, 1);
+    y1 = max(bbox(2) - expand, 1);
+    x2 = min(bbox(1) + bbox(3) + expand, size(binary_plate,2));
+    y2 = min(bbox(2) + bbox(4) + expand, size(binary_plate,1));
+    width = x2 - x1;
+    height = y2 - y1;
+
+    char_img = imcrop(binary_plate, [x1, y1, width, height]);
+    char_img = imresize(char_img, [50 30]);
+
+    <span class="comment">% Confirmation display</span>
+    figure, imshow(char_img);
+    title([<span class="string">'Character #'</span> num2str(i)]);
+<span class="keyword">end</span>
+
+disp(<span class="string">'Characters have been segmented and saved with the image name prefix ✅'</span>);
+</pre>
+<pre class="codeoutput">Characters have been segmented and saved with the image name prefix ✅
+</pre>
+<img vspace="5" hspace="5" src="fullCodeImplementation_07.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_08.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_09.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_10.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_11.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_12.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_13.png" alt="" /> <img vspace="5" hspace="5" src="fullCodeImplementation_14.png" alt="" /> <h2 id="6">step 5: OCR</h2>
+<pre class="codeinput"><span class="comment">% Detect edges using Prewitt operator</span>
+edges = edge(filtered_median, <span class="string">'prewitt'</span>);
+
+<span class="comment">% Find regions (connected components) and their bounding boxes</span>
+regions = regionprops(edges, <span class="string">'BoundingBox'</span>, <span class="string">'Area'</span>);
+
+<span class="comment">% Initialize detected plate text to empty string</span>
+detectedPlateText = <span class="string">''</span>;
+
+<span class="comment">% Initialize maxTextLength to zero</span>
+maxTextLength = 0;
+
+<span class="keyword">for</span> i = 1:numel(regions)
+    bbox = regions(i).BoundingBox;
+
+    <span class="comment">% Filtering Step</span>
+    width = bbox(3);
+    height = bbox(4);
+    aspect_ratio = width / height;
+
+    <span class="comment">% Keep regions with reasonable size and shape</span>
+    <span class="keyword">if</span> width &gt; 80 &amp;&amp; height &gt; 20 &amp;&amp; aspect_ratio &gt; 2 &amp;&amp; aspect_ratio &lt; 6
+        croppedRegion = imcrop(filtered_median, bbox);
+        ocrResult = ocr(croppedRegion);
+
+        detectedText = strtrim(ocrResult.Text);
+        detectedText = regexprep(detectedText, <span class="string">'[^A-Za-z0-9 ]'</span>, <span class="string">''</span>);
+
+        <span class="keyword">if</span> ~isempty(detectedText) &amp;&amp; length(detectedText) &gt; maxTextLength
+            maxTextLength = length(detectedText);
+            detectedPlateText = detectedText;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Print the detected plate text</span>
+<span class="keyword">if</span> ~isempty(detectedPlateText)
+    disp([<span class="string">'Detected Plate Text: '</span>, detectedPlateText]);
+<span class="keyword">else</span>
+    disp(<span class="string">'No valid plate text detected.'</span>);
+    <span class="keyword">return</span>; <span class="comment">% Stop execution if no plate text detected</span>
+<span class="keyword">end</span>
+</pre>
+<pre class="codeoutput">Detected Plate Text: CZI7 KOD
+</pre>
+<h2 id="7">Step 6: Check if Plate is Allowed to Enter after OCR</h2>
+<pre class="codeinput"><span class="comment">% Define the Database of allowed plates</span>
+allowedPlates = {<span class="keyword">...</span>
+    <span class="string">'DL6S BYX'</span>, <span class="keyword">...</span>
+    <span class="string">'EA0202AA'</span>, <span class="keyword">...</span>
+    <span class="string">'8117 MP7'</span>, <span class="keyword">...</span>
+    <span class="string">'DJ53096'</span>, <span class="keyword">...</span>
+    <span class="string">'MAT1234'</span>, <span class="keyword">...</span>
+    <span class="string">'ENG2025'</span>, <span class="keyword">...</span>
+    <span class="string">'TEST432'</span>, <span class="keyword">...</span>
+    <span class="string">'CZI7 KOD'</span>
+    };
+
+<span class="comment">% Initialize entry permission flag</span>
+isAllowed = false;
+
+<span class="comment">% Compare detected plate with allowed plates database</span>
+<span class="keyword">for</span> i = 1:length(allowedPlates)
+    <span class="keyword">if</span> strcmpi(detectedPlateText, allowedPlates{i})
+        disp([<span class="string">'✅ Access Granted: Car with Plate '</span>, allowedPlates{i}, <span class="string">' is allowed to enter.'</span>]);
+        isAllowed = true;
+        <span class="keyword">break</span>;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> ~isAllowed
+    disp(<span class="string">'❌ Access Denied: Car with Plate not authorized to enter.'</span>);
+<span class="keyword">end</span>
+</pre>
+<pre class="codeoutput">✅ Access Granted: Car with Plate CZI7 KOD is allowed to enter.
+</pre>
+<p class="footer">
+<br />
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB® R2024b</a>
+<br />
+</p>
+</div>
+
+
+
+</body></html>
