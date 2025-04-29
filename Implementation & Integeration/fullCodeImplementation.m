@@ -18,21 +18,14 @@ title('Grayscale Adjusted Image');
 
 %% step 2: remove noise
 
-%-------------------------
 % Method 1: Apply Gaussian Filter for smoothing
-%-------------------------
 gaussian_filter = fspecial('gaussian', [5 5], 1);  % [size] and sigma
 filtered_gaussian = imfilter(adjustedImage, gaussian_filter, 'replicate');
 
-%-------------------------
 % Method 2: Apply Median Filter to remove salt & pepper noise
-%-------------------------
 filtered_median = medfilt2(filtered_gaussian, [3 3]);
 
-%-------------------------
 % Display Results 
-%-------------------------
-
 figure;
 imshow(filtered_gaussian);
 title('After Gaussian Filter');
@@ -43,7 +36,30 @@ title('After Median Filter');
 
 fprintf('Noise reduction and filtering completed ✅\n');
 
-%% step 3: licence plate detetion
+%% step 3: Fourier Transform
+F = fft2(adjustedImage);
+%get the centered spectrum
+Fsh = fftshift(F);
+%apply log transform
+S2 = log(1+abs(Fsh));
+figure;
+imshow(S2,[]);title('FFT Spectrum before filtering car image')
+
+F = fft2(filtered_median);
+%get the centered spectrum
+Fsh = fftshift(F);
+%apply log transform
+S2 = log(1+abs(Fsh));
+figure;
+imshow(S2,[]);title('FFT Spectrum after filtering car image')
+
+%reconstruct the Image
+F = ifftshift(Fsh);
+f = ifft2(F);
+figure;
+imshow(f,[]),title('reconstructed car image from FFT')
+
+%% step 4: licence plate detetion
 
 % Load the license plate detector using the XML file
 plateDetector = vision.CascadeObjectDetector('licensePlate.xml');
@@ -95,7 +111,7 @@ else
     return; % Stop execution if no plate detected
 end
 
-%% step 4: character segmentation
+%% Step 5: Character Segmentation
 
 % 1. Adaptive Thresholding
 T = adaptthresh(plateImage, 0.79);
@@ -111,14 +127,14 @@ props = regionprops(binary_plate, 'BoundingBox', 'Centroid', 'Area');
 % 4. Filter by size: exclude very small or very large objects
 areas = [props.Area];
 min_area = 80;
-max_area = 2000; % To exclude large frames, e.g., the plate frame
+max_area = 2000; % To exclude large frames
 valid_idx = find(areas >= min_area & areas <= max_area);
 filtered_props = props(valid_idx);
 
 % 5. Extract Y-centroid to find the baseline
 centroids = cat(1, filtered_props.Centroid);
 mean_y = mean(centroids(:,2));
-tolerance = 25; % Allowable deviation for characters in the same line
+tolerance = 25;
 
 % 6. Filter characters in the same line
 line_idx = abs(centroids(:,2) - mean_y) < tolerance;
@@ -140,8 +156,7 @@ for i = 1:length(filtered_props)
 end
 hold off;
 
-
-% 10. Crop and save each character with expanded bounding box
+% 9. Crop, resize, and apply Fourier Transform on each character
 for i = 1:length(filtered_props)
     bbox = filtered_props(i).BoundingBox;
     expand = 5;
@@ -152,16 +167,33 @@ for i = 1:length(filtered_props)
     width = x2 - x1;
     height = y2 - y1;
 
+    % Crop and resize the character image
     char_img = imcrop(binary_plate, [x1, y1, width, height]);
     char_img = imresize(char_img, [50 30]);
 
-    % Confirmation display
+    % Display character image
     figure, imshow(char_img);
     title(['Character #' num2str(i)]);
+
+    % Fourier Transform
+    F = fft2(char_img);
+    Fsh = fftshift(F);
+    S2 = log(1 + abs(Fsh));
+    figure;
+    imshow(S2, []);
+    title(['FFT Spectrum of Character #' num2str(i)]);
+
+    % Inverse FFT to reconstruct
+    F = ifftshift(Fsh);
+    f = ifft2(F);
+    figure;
+    imshow(real(f), []);
+    title(['Reconstructed Character # ' num2str(i)], 'from FFT');
 end
 
-disp('Characters have been segmented and saved with the image name prefix ✅');
-%% step 5: OCR 
+disp('Characters have been segmented and Fourier transformed ✅');
+
+%% step 6: OCR 
 
 % Detect edges using Prewitt operator
 edges = edge(filtered_median, 'prewitt');
@@ -206,7 +238,7 @@ else
     return; % Stop execution if no plate text detected
 end
 
-%% Step 6: Check if Plate is Allowed to Enter after OCR 
+%% Step 7: Check if Plate is Allowed to Enter after OCR 
 
 % Define the Database of allowed plates
 allowedPlates = {...
