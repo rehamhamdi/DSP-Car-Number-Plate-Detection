@@ -1,44 +1,47 @@
-clc; close all; clear;
-% Step 1: Read input image
-inputImage = imread('car3.jpg');
+% Read the image
+im = imread('car5.jpg');
 
-% Step 2: Convert to grayscale
-grayImage = rgb2gray(inputImage);
+% Convert image to grayscale
+imgray = rgb2gray(im);
 
-% Step 3: Enhance contrast and reduce noise
-enhancedImage = imadjust(grayImage);
-filteredImage = medfilt2(enhancedImage);
-sharpenedImage = imsharpen(filteredImage);
+% Detect edges using Prewitt operator 
+edges = edge(imgray , 'prewitt');
 
-% Step 4: Adaptive binarization
-binaryImage = imbinarize(sharpenedImage, 'adaptive', ...
-    'ForegroundPolarity', 'dark', 'Sensitivity', 0.5);
+% Find regions (connected components) and their bounding boxes
+regions = regionprops(edges, 'BoundingBox', 'Area');
 
-% Step 5: Invert text color
-binaryImage = imcomplement(binaryImage);
+% Initialize detected plate text to empty string
+detectedPlateText = '';
 
-% Step 6: Remove small objects
-cleanedImage = bwareaopen(binaryImage, 60);
+% Initialize maxTextLength to zero
+maxTextLength = 0;
 
-% Step 7: Resize image (enlarge)
-resizedImage = imresize(cleanedImage, 3);
-resizedImage = uint8(resizedImage) * 255;  % Convert logical to uint8 image
+for i = 1:numel(regions)
+    bbox = regions(i).BoundingBox;
+    
+    % --- New Filtering Step ---
+    width = bbox(3);
+    height = bbox(4);
+    aspect_ratio = width / height;
+    
+    % Keep regions with reasonable size and shape
+    if width > 80 && height > 20 && aspect_ratio > 2 && aspect_ratio < 6
+        croppedRegion = imcrop(imgray , bbox);
+        ocrResult = ocr(croppedRegion);
+       
+        detectedText = strtrim(ocrResult.Text);
+        detectedText = regexprep(detectedText, '[^A-Za-z0-9 ]', '');
 
-% Step 8: Save processed image
-imwrite(resizedImage, 'temp_plate.png');
+        if ~isempty(detectedText) && length(detectedText) > maxTextLength
+            maxTextLength = length(detectedText);
+            detectedPlateText = detectedText;
+        end
+    end
+end
 
-% Step 9: Run external Tesseract (EDIT the path below if needed)
-tesseractPath = '"C:\Program Files\Tesseract-OCR\tesseract.exe"';
-[status, result] = system([tesseractPath ' temp_plate.png stdout -l eng --oem 1 --psm 7']);
-
-% Step 10: Clean result
-recognizedText = strtrim(result);
-
-% Step 11: Display results
-figure;
-imshow(inputImage);
-title(['Detected Plate Text: ', recognizedText], 'FontSize', 14, 'Color', 'blue');
-
-disp('--- Recognized Number Plate Text (Tesseract) ---');
-disp(recognizedText);
-disp('--- OCR via External Tesseract Completed ---');
+% Print the detected plate text
+if ~isempty(detectedPlateText)
+    disp(['Detected Plate Text: ', detectedPlateText]);
+else
+    disp('No valid plate text detected.');
+end
