@@ -49,12 +49,6 @@ if ~isempty(bboxes)
     w = w - 0.1 * w;  % Reduce the width by 10% (5% from each side)
     h = h - 0.1 * h;  % Reduce the height by 10% (5% from each side)
     
-    % Make sure the new coordinates are within the image boundaries
-    x = max(x, 1);
-    y = max(y, 1);
-    w = min(w, size(im, 2) - x);
-    h = min(h, size(im, 1) - y);
-    
     % Crop the image using the new bounding box
     plateImage = imcrop(im, [x, y, w, h]);
     
