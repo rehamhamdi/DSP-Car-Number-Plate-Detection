@@ -1,4 +1,4 @@
-% Noise Reduction & Filterin in MATLAB
+% Noise Reduction & Filtering in MATLAB
 
 % Loop through images in reconstructed_output folder
 inputFolder = 'reconstructed_output';
