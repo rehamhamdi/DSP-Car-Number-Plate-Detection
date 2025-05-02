@@ -1,8 +1,7 @@
-pkg load image
 
-originalImageName = 'LP2.jpg';
-adjustedImageName = 'LP2_adjusted.jpg';
-
+% Read the original image
+originalImageName = 'LP1.jpeg';
+adjustedImageName = 'LP1_adjusted.jpeg';
 
 scriptFolder = fileparts(mfilename('fullpath'));
 originalBaseFolder = fullfile(scriptFolder, 'originalImages');
@@ -10,6 +9,7 @@ originalImagePath = fullfile(originalBaseFolder, originalImageName);
 
 originalImage = imread(originalImagePath);
 
+% Convert to grayscale
 if size(originalImage, 3) == 3
     grayImage = rgb2gray(originalImage);
 else
@@ -19,12 +19,11 @@ end
 % Histogram equalization
 enhancedImage = histeq(grayImage);
 
-% OR, use contrast stretching
+% Contrast stretching
 adjustedImage = imadjust(grayImage);
 
-
-adjustedBaseFolder = fullfile(scriptFolder, 'filteredImages');
+% Store THe Adjusted Images
+adjustedBaseFolder = fullfile(scriptFolder, 'adjustedImages');
 adjustedImagePath = fullfile(adjustedBaseFolder, adjustedImageName);
 imwrite(adjustedImage, adjustedImagePath);
-
 
