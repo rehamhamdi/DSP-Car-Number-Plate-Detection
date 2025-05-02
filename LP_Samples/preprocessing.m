@@ -5,7 +5,7 @@ adjustedImageName = 'LP2_adjusted.jpg';
 
 
 scriptFolder = fileparts(mfilename('fullpath'));
-originalBaseFolder = fullfile(scriptFolder, 'LP_Samples', 'originalImages');
+originalBaseFolder = fullfile(scriptFolder, 'originalImages');
 originalImagePath = fullfile(originalBaseFolder, originalImageName);
 
 originalImage = imread(originalImagePath);
@@ -23,7 +23,7 @@ enhancedImage = histeq(grayImage);
 adjustedImage = imadjust(grayImage);
 
 
-adjustedBaseFolder = fullfile(scriptFolder, 'LP_Samples', 'filteredImages');
+adjustedBaseFolder = fullfile(scriptFolder, 'filteredImages');
 adjustedImagePath = fullfile(adjustedBaseFolder, adjustedImageName);
 imwrite(adjustedImage, adjustedImagePath);
 
