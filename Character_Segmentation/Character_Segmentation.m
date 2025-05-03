@@ -92,7 +92,7 @@ end
 
 for i = 1:length(filtered_props)
     bbox = filtered_props(i).BoundingBox;
-    expand = 5;
+    expand = 1;
     x1 = max(bbox(1) - expand, 1);
     y1 = max(bbox(2) - expand, 1);
     x2 = min(bbox(1) + bbox(3) + expand, size(binary_plate,2));
