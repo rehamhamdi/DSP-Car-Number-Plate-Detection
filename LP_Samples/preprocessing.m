@@ -1,7 +1,7 @@
 
 % Read the original image
-originalImageName = 'LP1.jpeg';
-adjustedImageName = 'LP1_adjusted.jpeg';
+originalImageName = 'LP1.jpg';
+adjustedImageName = 'LP1_adjusted.jpg';
 
 scriptFolder = fileparts(mfilename('fullpath'));
 originalBaseFolder = fullfile(scriptFolder, 'originalImages');
@@ -20,10 +20,17 @@ end
 enhancedImage = histeq(grayImage);
 
 % Contrast stretching
-adjustedImage = imadjust(grayImage);
+adjustedImage = imadjust(enhancedImage);
 
 % Store THe Adjusted Images
 adjustedBaseFolder = fullfile(scriptFolder, 'adjustedImages');
 adjustedImagePath = fullfile(adjustedBaseFolder, adjustedImageName);
 imwrite(adjustedImage, adjustedImagePath);
 
+
+% figure(1);
+% imshow(originalImage); title('Original');
+% figure(2);
+% imshow(enhancedImage); title('Histogram Equalized');
+% figure(3);
+% imshow(adjustedImage); title('Contrast Adjusted');
