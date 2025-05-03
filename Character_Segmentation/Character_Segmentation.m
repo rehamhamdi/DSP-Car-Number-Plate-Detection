@@ -3,43 +3,76 @@ clear;
 close all;
 
 % 1. Read the input image
-input_image_path = 'car2_result1.PNG';  % You can change this path to any image you like
+input_image_path = 'car15.jpg';  % Change path if needed
 plate_img = imread(input_image_path);
 gray_plate = rgb2gray(plate_img);
 
-% 2. Adaptive Thresholding
-T = adaptthresh(gray_plate, 0.79);
+% 2. Adaptive Thresholding with dynamic sensitivity based on image brightness and contrast
+
+% Calculate mean and standard deviation of the grayscale image
+gray_mean = mean(gray_plate(:));
+gray_std = std(double(gray_plate(:)));
+
+% Normalize mean and std to [0,1] range
+norm_mean = gray_mean / 255;
+norm_std = gray_std / 128;  % typical max std for 8-bit images
+
+% Compute adaptive sensitivity based on both mean brightness and contrast
+adaptive_sensitivity = 0.65 + (0.25 * (1 - norm_mean)) + (0.1 * (1 - norm_std));
+
+% Clamp sensitivity to a safe range [0.6, 0.9]
+adaptive_sensitivity = max(0.6, min(0.9, adaptive_sensitivity));
+
+% Display the calculated values for debugging
+fprintf('Gray mean: %.2f | Std: %.2f | Adaptive sensitivity: %.2f\n', gray_mean, gray_std, adaptive_sensitivity);
+
+% Apply adaptive thresholding using the computed sensitivity
+T = adaptthresh(gray_plate, adaptive_sensitivity);
 binary_plate = imbinarize(gray_plate, T);
+
+% Invert binary image: make characters white on black
 binary_plate = ~binary_plate;
 
-% 3. Remove small noise
+% 3. Noise removal
 binary_plate = bwareaopen(binary_plate, 50);
 
-% 4. Extract object properties
+% 4. Get all connected component properties
 props = regionprops(binary_plate, 'BoundingBox', 'Centroid', 'Area');
 
-% 5. Filter by size: exclude very small or very large objects
-areas = [props.Area];
-min_area = 80;
-max_area = 2000; % To exclude large frames, e.g., the plate frame
-valid_idx = find(areas >= min_area & areas <= max_area);
-filtered_props = props(valid_idx);
+% 5. Manual smart filtering using width, height, and aspect ratio
+filtered_props = struct('BoundingBox', {}, 'Centroid', {}, 'Area', {});
+for i = 1:length(props)
+    bbox = props(i).BoundingBox;
+    width = bbox(3);
+    height = bbox(4);
+    area = props(i).Area;
+    aspect_ratio = width / height;
 
-% 6. Extract Y-centroid to find the baseline
-centroids = cat(1, filtered_props.Centroid);
-mean_y = mean(centroids(:,2));
-tolerance = 25; % Allowable deviation for characters in the same line
+    % Smart filtering
+    if area > 50 && ...
+       width > 5 && width < 100 && ...
+       height > 10 && height < 120 && ...
+       aspect_ratio > 0.169 && aspect_ratio < 1.5
 
-% 7. Filter characters in the same line
-line_idx = abs(centroids(:,2) - mean_y) < tolerance;
-filtered_props = filtered_props(line_idx);
-centroids = centroids(line_idx,:);
+        filtered_props(end+1) = props(i); %#ok<SAGROW>
+    end
+end
 
-% 8. Sort from left to right
-[~, sort_idx] = sort(centroids(:,1));
-filtered_props = filtered_props(sort_idx);
+% 6. Filter characters in the same horizontal line
+if ~isempty(filtered_props)
+    centroids = cat(1, filtered_props.Centroid);
+    mean_y = mean(centroids(:,2));
+    tolerance = 25;
+    line_idx = abs(centroids(:,2) - mean_y) < tolerance;
+    filtered_props = filtered_props(line_idx);
+    centroids = centroids(line_idx,:);
 
-% 9. Display bounding boxes with numbering
+    % 7. Sort left to right
+    [~, sort_idx] = sort(centroids(:,1));
+    filtered_props = filtered_props(sort_idx);
+end
+
+% 8. Show final bounding boxes
 figure, imshow(plate_img);
 title('Final Filtered Bounding Boxes');
 hold on;
@@ -50,16 +83,13 @@ for i = 1:length(filtered_props)
 end
 hold off;
 
-% 10. Save characters into a folder
+% 9. Save characters to folder
 output_folder = 'final_segmented_characters';
 if ~exist(output_folder, 'dir')
     mkdir(output_folder);
 end
+[~, image_name, ~] = fileparts(input_image_path);
 
-% Get the base name of the input image
-[~, image_name, ~] = fileparts(input_image_path); % Extract image name without extension
-
-% 11. Crop and save each character with expanded bounding box
 for i = 1:length(filtered_props)
     bbox = filtered_props(i).BoundingBox;
     expand = 5;
@@ -73,13 +103,11 @@ for i = 1:length(filtered_props)
     char_img = imcrop(binary_plate, [x1, y1, width, height]);
     char_img = imresize(char_img, [50 30]);
 
-    % Create filename based on the input image name
     filename = fullfile(output_folder, sprintf('%s_char_%d.png', image_name, i));
     imwrite(char_img, filename);
 
-    % Confirmation display
     figure, imshow(char_img);
     title(['Character #' num2str(i)]);
 end
 
-disp('Characters have been segmented and saved with the image name prefix ✅');
+disp('✅ Characters have been segmented and saved successfully.');
