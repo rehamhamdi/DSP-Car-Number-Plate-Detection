@@ -34,6 +34,3 @@ It applies **Digital Signal Processing (DSP)** techniques for image preprocessin
 7. **Output** – Display detected plate number and processed images.
 
 ---
-
-## 📂 Project Structure
-
